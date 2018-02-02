@@ -7,7 +7,8 @@ import com.test.weathermusic.dto.ItemDto;
 import com.test.weathermusic.util.URIBuilder;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,11 +27,21 @@ import java.util.stream.Stream;
  * Created by Eduardo on 30/01/2018.
  */
 @Service
+@CacheConfig(cacheNames = "music")
 public class MusicApi {
 
-    private static final String API_TOKEN = "https://accounts.spotify.com/api/token";
-    private static final String HOST = "https://api.spotify.com";
-    private static final String PATH_SEARCH_PLAYLISTS = "/v1/search";
+    public static final String MUSIC_AUTH_PATH = "/api/token";
+    public static final String PATH_SEARCH_PLAYLISTS = "/v1/search";
+    public static final String PATH_BROWSE_FEATURED_PLAYLISTS = "/v1/browse/featured-playlists";
+
+    @Value("${music.api.auth.uri}")
+    private String API_TOKEN;
+    @Value("${music.api.uri}")
+    private String HOST;
+    @Value("${music.api.client.id}")
+    private String CLIENT_ID;
+    @Value("${music.api.secret.key}")
+    private String SECRET_KEY;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -48,8 +56,7 @@ public class MusicApi {
     }
 
     private void generateNewToken() {
-        final String creds = "4459b3d67fbd4dcb9ba3ea9a13b7b63c" + ":" + "b398d0654b724c96bd2cf683dbc15738";
-        final String encodedCreds = new String(Base64.encodeBase64(creds.getBytes()));
+        final String encodedCreds = new String(Base64.encodeBase64((CLIENT_ID + ":" + SECRET_KEY).getBytes()));
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Basic " + encodedCreds);
@@ -59,11 +66,11 @@ public class MusicApi {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        JsonNode response = restTemplate.postForObject(API_TOKEN, request, JsonNode.class);
+        JsonNode response = restTemplate.postForObject(API_TOKEN + MUSIC_AUTH_PATH, request, JsonNode.class);
         this.accessToken = response.findValue("access_token").asText();
     }
 
-    @Cacheable("music")
+    @Cacheable
     public List<String> searchPlaylists(String query) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getAccessToken());
@@ -106,7 +113,26 @@ public class MusicApi {
         return Stream.of(items).map(i -> i.getTrack().getName()).collect(Collectors.toList());
     }
 
+    @Cacheable
+    public List<String> getFromFeaturedPlaylists() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + getAccessToken());
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
+        final MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
 
+        ResponseEntity<JsonNode> response = restTemplate.exchange(
+                URIBuilder.buildWithParams(HOST + PATH_BROWSE_FEATURED_PLAYLISTS, paramMap),
+                HttpMethod.GET,
+                entity,
+                JsonNode.class);
+        List<JsonNode> items = response.getBody().findValues("items");
 
+        return items.stream()
+             .flatMap(i -> i.findValues("tracks").stream())
+             .map(t -> t.findValue("href"))
+             .map(h -> getTrackNames(h.asText()).get(0))
+             .limit(10)
+             .collect(Collectors.toList());
+    }
 }

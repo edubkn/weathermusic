@@ -27,4 +27,10 @@ public class MusicApiTests {
         List<String> trackNames = musicApi.searchPlaylists("rock");
         assertThat(trackNames.size(), greaterThan(0));
     }
+
+    @Test
+    public void testGetFromFeaturedPlaylists() throws JsonProcessingException {
+        List<String> trackNames = musicApi.getFromFeaturedPlaylists();
+        assertThat(trackNames.size(), greaterThan(0));
+    }
 }

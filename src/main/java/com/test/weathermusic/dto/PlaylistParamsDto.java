@@ -70,22 +70,6 @@ public class PlaylistParamsDto {
                 .append(lon)
                 .toHashCode();
     }
-    /*
-    *  @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder()//
-                .append("OrderSyncTransactionVO [")//
-                .append("transactionId=")//
-                .append(transactionId)//
-                .append(",transactionCode=\"")//
-                .append(transactionCode).append("\"")//
-                .append(",paymentDate=")//
-                .append(paymentDate)//
-                .append(",priority=")//
-                .append(priority)//
-                .append("]");
-        return builder.toString();
-    }*/
 
     @Override
     public String toString() {

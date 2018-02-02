@@ -28,10 +28,15 @@ ext {
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-amqp')
+	compile('com.github.tomakehurst:wiremock')
+	compile('net.sf.ehcache:ehcache')
+	compile('org.apache.httpcomponents:httpclient')
+	compile('org.springframework.boot:spring-boot-starter-cache')
+	compile ('org.springframework.boot:spring-boot-starter-jetty')
+	compile('org.springframework.boot:spring-boot-starter-web') {
+		exclude(module: 'spring-boot-starter-tomcat')
+	}
 	compile('org.springframework.cloud:spring-cloud-starter-hystrix')
-	compile('org.springframework.boot:spring-boot-starter-jersey')
-	compile('org.springframework.boot:spring-boot-starter-web')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 

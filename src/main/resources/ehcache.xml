@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache>
+    <defaultCache eternal="true" maxElementsInMemory="100" overflowToDisk="false" />
+    <cache name="weather"
+           maxElementsInMemory="1000"
+           timeToIdleSeconds="600"
+           timeToLiveSeconds="600"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="FIFO" />
+    <cache name="music"
+           maxElementsInMemory="1000"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="3600"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="FIFO" />
+</ehcache>

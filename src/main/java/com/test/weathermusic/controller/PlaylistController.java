@@ -2,7 +2,6 @@ package com.test.weathermusic.controller;
 
 import com.test.weathermusic.dto.PlaylistParamsDto;
 import com.test.weathermusic.service.PlaylistService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,8 +16,11 @@ public class PlaylistController {
 
     public static final String PATH = "/playlist";
 
-    @Autowired
     private PlaylistService playlistService;
+
+    public PlaylistController(PlaylistService playlistService) {
+        this.playlistService = playlistService;
+    }
 
     @GetMapping(PATH)
     public List<String> buildPlaylist(@Valid PlaylistParamsDto params) {

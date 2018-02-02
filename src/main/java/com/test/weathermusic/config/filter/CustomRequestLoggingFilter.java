@@ -5,7 +5,7 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created by Eduardo on 30/01/2018.
+ * Filtro para logar as chamadas REST da aplicação
  */
 public class CustomRequestLoggingFilter extends CommonsRequestLoggingFilter {
 

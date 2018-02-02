@@ -20,12 +20,12 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class WeatherApiTests {
+public class PlaylistIntegrationTests {
 
 	private TestRestTemplate restTemplate = new TestRestTemplate();
 	private Locale loc = new Locale("pt", "BR");
 
-	@Value("${api.host}")
+	@Value("${app.host}")
 	private String host;
 
 	@LocalServerPort
@@ -35,21 +35,21 @@ public class WeatherApiTests {
 	private ResourceBundleMessageSource messageSource;
 
 	@Test
-	public void testWeatherCity() {
+	public void testPlaylistCity() {
 		ResponseEntity<String> response = restTemplate.getForEntity(buildUri() + "/playlist?city=Araraquara", String.class);
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
 		assertThat(response.getBody(), notNullValue());
 	}
 
 	@Test
-	public void testWeatherCoords() {
+	public void testPlaylistCoords() {
 		ResponseEntity<String> response = restTemplate.getForEntity(buildUri() + "/playlist?lat=-48.18&lon=-21.79", String.class);
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
 		assertThat(response.getBody(), notNullValue());
 	}
 
 	@Test
-	public void testWeatherCoordsNoLat() {
+	public void testPlaylistCoordsNoLat() {
 		ResponseEntity<String> response = restTemplate.getForEntity(buildUri() + "/playlist?lon=-21.79", String.class);
 		assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(response.getBody(), containsString(getMessage("validation.playlist.params")));

@@ -1,4 +1,4 @@
-package com.test.weathermusic.util.spring;
+package com.test.weathermusic.util.bean;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
